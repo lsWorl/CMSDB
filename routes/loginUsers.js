@@ -1,9 +1,9 @@
 const router = require('koa-router')()
-const { QueryUser, UpdateUser } = require('../dao/UserDao')
+const { UpdateLoginUser , QueryLoginUser } = require('../dao/LoginUserDao')
 router.prefix('/users')
 
 router.get('/', async (ctx, next) => {
-  const data = await QueryUser()
+  const data = await QueryLoginUser()
   if (data[0].length === 0 || !data) {
     ctx.body = {
       err: 2,
@@ -20,7 +20,7 @@ router.get('/', async (ctx, next) => {
   }
 })
   .put('/', async (ctx, next) => {
-    const data = await UpdateUser(ctx.query.id, ctx.query.name, ctx.query.phone, ctx.query.date, ctx.query.address)
+    const data = await UpdateLoginUser(ctx.query.id, ctx.query.name, ctx.query.phone, ctx.query.permissions)
 
     if (data[0].length === 0 || !data) {
       ctx.body = {
@@ -39,9 +39,5 @@ router.get('/', async (ctx, next) => {
 
     // console.log(ctx.query, '123456----------------')
   })
-
-router.get('/bar', function (ctx, next) {
-  ctx.body = 'this is a users/bar response'
-})
 
 module.exports = router

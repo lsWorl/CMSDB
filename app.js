@@ -10,6 +10,7 @@ const index = require('./routes/index')
 const users = require('./routes/users')
 const {poolFn} = require('./config/DBConfig')
 
+const LoginUser = require('./dao/LoginUserDao')
 // error handler
 onerror(app)
 
