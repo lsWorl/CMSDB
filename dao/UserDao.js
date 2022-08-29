@@ -41,8 +41,21 @@ function UpdateUser(id,name, phone, date, address) {
 
 }
 
+// 新增用户
+function InsertUser(obj){
+  return new Promise((resolve,reject)=>{
+    const data = poolFn(`INSERT INTO user(name,phone,date,address) VALUES('${obj.name}','${obj.phone}','${obj.date}','${obj.address}')`)
+    if (data) {
+      resolve(data)
+    } else {
+      reject()
+    }
+  })
+}
+
 
 module.exports = {
   UpdateUser,
-  QueryUser
+  QueryUser,
+  InsertUser
 }

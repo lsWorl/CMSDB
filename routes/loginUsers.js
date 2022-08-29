@@ -1,5 +1,5 @@
 const router = require('koa-router')()
-const { UpdateLoginUser , QueryLoginUser } = require('../dao/LoginUserDao')
+const { UpdateLoginUser, QueryLoginUser } = require('../dao/LoginUserDao')
 router.prefix('/users')
 
 router.get('/', async (ctx, next) => {
@@ -19,7 +19,7 @@ router.get('/', async (ctx, next) => {
     data: data[0]
   }
 })
-  .put('/', async (ctx, next) => {
+  .post('/', async (ctx, next) => {
     const data = await UpdateLoginUser(ctx.query.id, ctx.query.name, ctx.query.phone, ctx.query.permissions)
 
     if (data[0].length === 0 || !data) {
@@ -38,6 +38,9 @@ router.get('/', async (ctx, next) => {
     }
 
     // console.log(ctx.query, '123456----------------')
+  })
+  .put('/', async (ctx, next) => {
+    
   })
 
 module.exports = router

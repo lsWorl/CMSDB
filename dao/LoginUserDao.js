@@ -39,6 +39,17 @@ function UpdateLoginUser(id,name,phone,permissions){
   
 }
 
+function insertLoginUser(obj){
+  return new Promise((resolve,reject)=>{
+    const data = poolFn(`INSERT INTO login_user(name,phone,permissions) VALUES('${obj.name}','${obj.phone}','${obj.permissions}')`)
+    if (data) {
+      resolve(data)
+    } else {
+      reject()
+    }
+  })
+}
+
 
 module.exports = {
   UpdateLoginUser,
