@@ -8,9 +8,8 @@ const logger = require('koa-logger')
 
 const index = require('./routes/index')
 const users = require('./routes/users')
-const {poolFn} = require('./config/DBConfig')
+const loginUsers = require('./routes/loginUsers')
 
-const LoginUser = require('./dao/LoginUserDao')
 // error handler
 onerror(app)
 
@@ -18,12 +17,6 @@ onerror(app)
 app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }))
-// 创建与数据库的连接池
-// app.use(async (ctx,next)=>{
-//   const data = await poolFn('SELECT * FROM user')
-//   console.log(data[0])
-//   await next()
-// })
 
 // 设置允许跨域
 app.use( async(ctx,next)=>{
@@ -33,8 +26,10 @@ app.use( async(ctx,next)=>{
     "Access-Control-Allow-Methods":"DELETE,PUT,POST,GET,OPTIONS"
   })
   console.log('已经成功配置跨域！')
+  
   await next()
 })
+
 
 app.use(json())
 app.use(logger())
@@ -55,6 +50,8 @@ app.use(async (ctx, next) => {
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
+app.use(loginUsers.routes(), loginUsers.allowedMethods())
+
 
 // error-handling
 app.on('error', (err, ctx) => {
