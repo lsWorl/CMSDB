@@ -14,13 +14,27 @@ function QueryLoginUser() {
       })
     }
   })
-
-
 }
 // 通过ID进行查找
-function QueryUserId(id) {
+function QueryLoginUserId(id) {
   return new Promise((resolve, reject) => {
     const data = poolFn(`SELECT * FROM login_user where id=${id}`)
+    if (data != '') {
+      resolve(data)
+    } else {
+      reject({
+        code: 406,
+        error: "Not Acceptable",
+        errMsg: "查询的数据不符合格式"
+      })
+    }
+  })
+}
+
+// 通过账号密码查询用户
+function QueryLoginUserPwd(name,pwd,permissions){
+  return new Promise((resolve,reject)=>{
+    const data = poolFn(`SELECT * FROM login_user where name='${name}' and password = '${pwd}' and permissions = ${permissions}`)
     if (data != '') {
       resolve(data)
     } else {
@@ -86,5 +100,6 @@ module.exports = {
   UpdateLoginUser,
   QueryLoginUser,
   InsertLoginUser,
-  DeleteLoginUser
+  DeleteLoginUser,
+  QueryLoginUserPwd
 }

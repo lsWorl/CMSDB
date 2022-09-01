@@ -9,26 +9,52 @@ const logger = require('koa-logger')
 const index = require('./routes/index')
 const users = require('./routes/users')
 const loginUsers = require('./routes/loginUsers')
+const JWT = require('./util/JWT')
 
 // error handler
 onerror(app)
 
 // middlewares
 app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
+  enableTypes: ['json', 'form', 'text']
 }))
 
 // 设置允许跨域
-app.use( async(ctx,next)=>{
-  ctx.res.writeHead(200,{
-    "Content-Type": "application/json;charset=utf-8",
-    "access-control-allow-origin": "*",
-    "Access-Control-Allow-Methods":"DELETE,PUT,POST,GET,OPTIONS"
-  })
+app.use(async (ctx, next) => {
+  ctx.set("Content-Type", "application/json;charset=utf-8")
+  ctx.set("access-control-allow-origin", "*")
+  ctx.set("Access-Control-Allow-Methods", "DELETE,PUT,POST,GET,OPTIONS")
+  ctx.set("Access-Control-Expose-Headers", "Authorization")
+  ctx.set("Access-Control-Allow-Headers", "Authorization")
+  ctx.status = 200
   console.log('已经成功配置跨域！')
-  
+
   await next()
 })
+//token验证
+app.use(async (ctx, next) => {
+  
+  if(ctx.url.includes('login')){
+    await next()
+    return
+  }
+
+  const token = ctx.headers["authorization"]?.split(" ")[1]
+  console.log(token)
+  if(token){
+    // 对token解密
+    const payload = JWT.verify(token)
+    if(payload){
+      await next()
+    }else{
+      ctx.status = 403
+      ctx.body = {errCode:-1,errInfo:"token过期"}
+    }
+  }else{
+    await next()
+  }
+})
+
 
 
 app.use(json())
