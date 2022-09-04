@@ -1,10 +1,10 @@
 const { poolFn } = require('../config/DBConfig')
 
 // 查找用户
-function QueryUser() {
+function QueryUser(offset = 0 , limit = 10) {
   // console.log(id)
   return new Promise((resolve, reject) => {
-    const data = poolFn(`SELECT * FROM user`)
+    const data = poolFn(`SELECT * FROM user LIMIT ${offset} , ${limit}`)
     if (data != '') {
       resolve(data)
     } else {
