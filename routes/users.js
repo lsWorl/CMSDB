@@ -9,7 +9,7 @@ router.get('/', userQuery)
   .delete('/', userDelete)
 
 router.get('/search', function (ctx, next) {
-  ctx.body = 'this is a users/bar response'
+  ctx.body = {msg:'this is a users/bar response'}
 })
 
 module.exports = router

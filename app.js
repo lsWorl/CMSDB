@@ -22,9 +22,13 @@ app.use(bodyparser({
 // 设置允许跨域
 app.use(async (ctx, next) => {
   ctx.set("Content-Type", "application/json;charset=utf-8")
+  // 允许跨域
   ctx.set("access-control-allow-origin", "*")
+  // 允许通过的方法
   ctx.set("Access-Control-Allow-Methods", "DELETE,PUT,POST,GET,OPTIONS")
+  // 允许客户端看到的请求头内容
   ctx.set("Access-Control-Expose-Headers", "Authorization")
+  // 允许客户端返回的请求头内容
   ctx.set("Access-Control-Allow-Headers", "Authorization")
   ctx.status = 200
   console.log('已经成功配置跨域！')
