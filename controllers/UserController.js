@@ -1,4 +1,4 @@
-const { QueryUser, UpdateUser, InsertUser, DeleteUser } = require('../dao/UserDao')
+const { QueryUser, UpdateUser, InsertUser, DeleteUser , UserLoginIsValid } = require('../dao/UserDao')
 
 // 添加用户
 const userAdd = async (ctx, next) => {
@@ -44,7 +44,7 @@ const userAdd = async (ctx, next) => {
 // 查询用户
 const userQuery = async (ctx, next) => {
   try {
-    const data = await QueryUser(ctx.query?.offset,ctx.query?.limit)
+    const data = await QueryUser(ctx.query?.offset, ctx.query?.limit)
     if (data[0].length === 0 || !data) {
       ctx.body = {
         err: 2,
@@ -59,12 +59,12 @@ const userQuery = async (ctx, next) => {
       // 删除密码，不将密码传给前端
       delete item.password
     })
-    
+
     ctx.body = {
       ok: 1,
       code: 1,
       data: data[0],
-      total:data[0].length
+      total: data[0].length
     }
   } catch (error) {
     ctx.body = {
@@ -104,7 +104,7 @@ const userUpdate = async (ctx, next) => {
 }
 
 // 删除用户
-const userDelete =  async (ctx, next) => {
+const userDelete = async (ctx, next) => {
   try {
     const { id } = ctx.query
     const data = await DeleteUser(id)
@@ -133,9 +133,56 @@ const userDelete =  async (ctx, next) => {
 
 }
 
+// 用户登录
+const userLogin = async (ctx, next) => {
+  try {
+    console.log(ctx.query)
+    const { phone, password, validCode } = ctx.query
+    
+    // 验证验证码
+    if (validCode === '1') {
+      const data = await UserLoginIsValid(phone,password)
+
+      if (data[0].length === 0 || !data) {
+        ctx.body = {
+          err: 2,
+          code: 406,
+          msg: '删除错误',
+          data: null
+        }
+        return
+      }
+
+      ctx.body = {
+        ok: 1,
+        code: 1,
+        msg: '登录验证成功！'
+      }
+    }
+  } catch (error) {
+    ctx.body = {
+      sqlState: error,
+      sqlMessage: "SQL数据有误！"
+    }
+  }
+}
+
+// 模拟验证码发送
+const sendValidCode = async(ctx, next)=>{
+  try {
+    const ValidCode = Math.floor(Math.random() * 1000000) 
+  } catch (error) {
+    ctx.body = {
+      sqlState: error,
+      sqlMessage: "服务器出问题"
+    }
+  }
+}
 module.exports = {
   userAdd,
   userQuery,
   userUpdate,
-  userDelete
+  userDelete,
+  userLogin,
+  sendValidCode
 }

@@ -34,7 +34,7 @@ function QueryUserId(id) {
 // 通过手机号查找
 function QueryUserPhone(phone){
   return new Promise((resolve, reject) => {
-    const data = poolFn(`SELECT * FROM user where id=${phone}`)
+    const data = poolFn(`SELECT * FROM user where phone=${phone}`)
     if (data != '') {
       resolve(data)
     } else {
@@ -96,9 +96,26 @@ function DeleteUser(id) {
   })
 }
 
+const UserLoginIsValid = (phone,password)=>{
+  return new Promise((resolve,reject)=>{
+    const data = poolFn(`SELECT * FROM user where phone=${phone} AND password=${password}`)
+    if (data != '') {
+      resolve(data)
+    } else {
+      reject({
+        code: 406,
+        error: "Not Acceptable",
+        errMsg: "查询的数据不符合格式"
+      })
+    }
+  })
+}
+
+
 module.exports = {
   UpdateUser,
   QueryUser,
   InsertUser,
-  DeleteUser
+  DeleteUser,
+  UserLoginIsValid
 }
