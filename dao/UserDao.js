@@ -67,7 +67,16 @@ function UpdateUser(id, name, phone, date, address) {
 // 新增用户
 function InsertUser(obj) {
   return new Promise((resolve, reject) => {
-    const data = poolFn(`INSERT INTO user(id,name,phone,date,address) VALUES(${obj.id},'${obj.name}','${obj.phone}','${obj.date}','${obj.address}')`)
+    // 判断是否有传入id
+    let data
+    
+  
+    if(obj.id){
+      data = poolFn(`INSERT INTO user(id,name,phone,date,address) VALUES(${obj.id},'${obj.name}','${obj.phone}','${obj.date}','${obj.address}')`)
+    }else{
+      data = poolFn(`INSERT INTO user(name,phone,date,address,password) VALUES('${obj.name}','${obj.phone}','${obj.date}','${obj.address}','${obj.password}')`)
+    }
+    
     if (data) {
       resolve(data)
     } else {

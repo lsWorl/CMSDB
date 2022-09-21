@@ -1,6 +1,6 @@
 const router = require('koa-router')()
 
-const { userAdd, userQuery, userUpdate, userDelete ,userLogin , sendValidCode} = require('../controllers/UserController')
+const { userAdd, userQuery, userUpdate, userDelete ,userLogin , sendValidCode , userRegistry} = require('../controllers/UserController')
 router.prefix('/users')
 
 router.get('/', userQuery)
@@ -14,6 +14,8 @@ router.get('/search', function (ctx, next) {
 
 router.post('/login',userLogin)
 
-router.post('/validCode',sendValidCode)
+router.post('/registry',userRegistry)
+
+router.get('/validCode',sendValidCode)
 
 module.exports = router

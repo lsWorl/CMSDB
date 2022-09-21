@@ -1,5 +1,10 @@
-const { QueryUser, UpdateUser, InsertUser, DeleteUser , UserLoginIsValid } = require('../dao/UserDao')
+const { QueryUser, UpdateUser, InsertUser, DeleteUser, UserLoginIsValid } = require('../dao/UserDao')
 
+// 获取随机数
+const getRandomValues = require('get-random-values')
+
+// 存放验证码
+let BackValidCode
 // 添加用户
 const userAdd = async (ctx, next) => {
 
@@ -138,16 +143,17 @@ const userLogin = async (ctx, next) => {
   try {
     console.log(ctx.query)
     const { phone, password, validCode } = ctx.query
-    
+
     // 验证验证码
-    if (validCode === '1') {
-      const data = await UserLoginIsValid(phone,password)
+    if (validCode === BackValidCode) {
+      const data = await UserLoginIsValid(phone, password)
 
       if (data[0].length === 0 || !data) {
         ctx.body = {
           err: 2,
+          ok:3,
           code: 406,
-          msg: '删除错误',
+          msg: '登录验证失败',
           data: null
         }
         return
@@ -158,6 +164,12 @@ const userLogin = async (ctx, next) => {
         code: 1,
         msg: '登录验证成功！'
       }
+    } else {
+      ctx.body = {
+        ok: 2,
+        code: 402,
+        msg: '验证码错误！'
+      }
     }
   } catch (error) {
     ctx.body = {
@@ -167,11 +179,85 @@ const userLogin = async (ctx, next) => {
   }
 }
 
-// 模拟验证码发送
-const sendValidCode = async(ctx, next)=>{
+// 用户注册
+const userRegistry = async (ctx, next) => {
   try {
-    const ValidCode = Math.floor(Math.random() * 1000000) 
+    console.log(ctx.query)
+    const {validCode , phone , password} = ctx.query
+    if (validCode === BackValidCode) {
+      // 模拟假数据
+      const address = '学源街'
+      const name = 'user'
+      const nowDate = new Date()
+      const date = nowDate.getFullYear() + '-' + (nowDate.getMonth() + 1) + '-' + nowDate.getDay()
+      const obj = {
+        phone,
+        password,
+        name,
+        address,
+        date
+      }
+      const data = await InsertUser(obj)
+      if (data[0].length === 0 || !data) {
+        ctx.body = {
+          err: 2,
+          code: 406,
+          msg: '注册信息错误',
+          data: null
+        }
+        return
+      }
+
+      ctx.body = {
+        ok: 1,
+        code: 1,
+        msg: '注册成功！'
+      }
+    } else {
+      ctx.body = {
+        ok: 2,
+        code: 402,
+        msg: '验证码错误'
+      }
+    }
+
   } catch (error) {
+    console.log(typeof error.sqlState)
+    if(error.sqlState === '23000'){
+      ctx.body = {
+        ok:3,
+        sqlState: error.sqlState,
+        sqlMessage: "手机号已存在！"
+      }
+      return
+    }
+    ctx.body = {
+      sqlState: error.sqlState,
+      sqlMessage: "SQL数据有误！"
+    }
+  }
+}
+
+// 模拟验证码发送
+const sendValidCode = async (ctx, next) => {
+  try {
+    let array = new Uint8Array(2);
+    // 获取随机数
+    getRandomValues(array);
+    console.log(array);
+    // 小于三位数加100转变为三位数
+    if (array[0] < 100) { array[0] = array[0] + 100 }
+    if (array[1] < 100) { array[1] = array[1] + 100 }
+    BackValidCode = array[0] + '' + array[1]
+    ctx.body = {
+      ok: 1,
+      code: 1,
+      data: {
+        validCode: array[0] + '' + array[1]
+      }
+    }
+  } catch (error) {
+    console.log(error)
     ctx.body = {
       sqlState: error,
       sqlMessage: "服务器出问题"
@@ -184,5 +270,6 @@ module.exports = {
   userUpdate,
   userDelete,
   userLogin,
-  sendValidCode
+  sendValidCode,
+  userRegistry
 }

@@ -37,7 +37,6 @@ app.use(async (ctx, next) => {
 })
 //token验证
 app.use(async (ctx, next) => {
-  
   if(ctx.url.includes('login')){
     await next()
     return
