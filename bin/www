@@ -24,6 +24,14 @@ var server = http.createServer(app.callback());
 /**
  * Listen on provided port, on all network interfaces.
  */
+// 测试socket
+var server2 = http.createServer(app.callback());
+const io = require('socket.io')(server);
+// io.listen(3000)
+io.on('connection', client => {
+  console.log('连接成功')
+  // console.log(client)
+});
 
 server.listen(port);
 server.on('error', onError);

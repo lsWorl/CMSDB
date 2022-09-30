@@ -105,9 +105,10 @@ function DeleteUser(id) {
   })
 }
 
+// 验证用户登录
 const UserLoginIsValid = (phone,password)=>{
   return new Promise((resolve,reject)=>{
-    const data = poolFn(`SELECT * FROM user where phone=${phone} AND password=${password}`)
+    const data = poolFn(`SELECT * FROM user where phone=${phone} AND password='${password}'`)
     if (data != '') {
       resolve(data)
     } else {

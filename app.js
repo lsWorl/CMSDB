@@ -11,6 +11,12 @@ const users = require('./routes/users')
 const loginUsers = require('./routes/loginUsers')
 const JWT = require('./util/JWT')
 
+// const io =require('socket.io')();
+// io.on('connection', client => { 
+//   console.log('连接成功')
+//  });
+// io.listen(3000);
+
 // error handler
 onerror(app)
 
@@ -18,6 +24,7 @@ onerror(app)
 app.use(bodyparser({
   enableTypes: ['json', 'form', 'text']
 }))
+
 
 // 设置允许跨域
 app.use(async (ctx, next) => {
@@ -86,4 +93,8 @@ app.use(loginUsers.routes(), loginUsers.allowedMethods())
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });
+
+//连接socket
+app.use(async(ctx,next)=>{
+})
 module.exports = app
