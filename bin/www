@@ -24,14 +24,23 @@ var server = http.createServer(app.callback());
 /**
  * Listen on provided port, on all network interfaces.
  */
-// 测试socket
-var server2 = http.createServer(app.callback());
+// socket连接
 const io = require('socket.io')(server);
 // io.listen(3000)
-io.on('connection', client => {
-  console.log('连接成功')
-  // console.log(client)
-});
+io.on('connection', function (socket) {
+  console.log('有一个客户端连接上了服务器')
+
+  // console.log('okok');
+  // 绑定监听, 接收客户端发送的消息
+  socket.on('sendMsg', function (data) {
+    console.log('服务器接收到客户端发送的消息', data)
+    // 处理数据
+    // data.name = data.name
+    // 服务器向客户端发送消息
+    io.emit('receiveMsg', {name:"名字"})
+    // console.log('服务器向客户端发送消息', '你好')
+  })
+})
 
 server.listen(port);
 server.on('error', onError);
