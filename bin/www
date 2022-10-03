@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('demo:server');
 var http = require('http');
+const { userAdd } = require('../controllers/UserController');
 
 /**
  * Get port from environment and store in Express.
@@ -25,20 +26,47 @@ var server = http.createServer(app.callback());
  * Listen on provided port, on all network interfaces.
  */
 // socket连接
-const io = require('socket.io')(server);
-// io.listen(3000)
-io.on('connection', function (socket) {
-  console.log('有一个客户端连接上了服务器')
 
-  // console.log('okok');
+const io = require('socket.io')(server);
+// 连接上socket的用户数量
+var hasUser = [];
+
+io.on('connection', function (socket) {
+  console.log('有一个客户端连接上了服务器,id号为'+ socket.id)
+  socket.join('2')
+  socket.on('userId',function (data){
+    console.log('发送的id'+data)
+    hasUser.push({
+      socketId:socket.id,
+      userId:data
+    })
+  })
+  console.log('socketId:' + socket.id)
+  
   // 绑定监听, 接收客户端发送的消息
+
+  socket.on("private message", ({ content, to }) => {
+    
+    console.log('接收到客户端发来的消息：'+content + '对象为:'+to)
+    socket.to(to).emit("private message", {
+      content,
+      from: socket.id,
+    });
+    console.log('加入的房间',socket.rooms)
+  });
+
+
   socket.on('sendMsg', function (data) {
+    console.log('发送消息Id:' + socket.id)
     console.log('服务器接收到客户端发送的消息', data)
     // 处理数据
-    // data.name = data.name
+    // 发固定人发送消息
+    
+    // 如果有接收id说明是双人聊天
+    
     // 服务器向客户端发送消息
-    io.emit('receiveMsg', {name:"名字"})
-    // console.log('服务器向客户端发送消息', '你好')
+    
+    io.emit('receiveMsg', data)
   })
 })
 

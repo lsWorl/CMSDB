@@ -147,6 +147,10 @@ const userLogin = async (ctx, next) => {
     // 验证验证码
     if (validCode === BackValidCode) {
       const data = await UserLoginIsValid(phone, password)
+      console.log(data[0][0])
+      // 去除密码把消息传给前端
+      const newData = {...data[0][0]}
+      delete newData.password
 
       if (data[0].length === 0 || !data) {
         ctx.body = {
@@ -162,7 +166,8 @@ const userLogin = async (ctx, next) => {
       ctx.body = {
         ok: 1,
         code: 1,
-        msg: '登录验证成功！'
+        msg: '登录验证成功！',
+        data:newData
       }
     } else {
       ctx.body = {
