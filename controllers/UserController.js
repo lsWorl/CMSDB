@@ -5,6 +5,8 @@ const getRandomValues = require('get-random-values')
 
 // 存放验证码
 let BackValidCode
+// 存放已经登录的用户
+const LoginedUserId = []
 // 添加用户
 const userAdd = async (ctx, next) => {
 
@@ -141,21 +143,21 @@ const userDelete = async (ctx, next) => {
 // 用户登录
 const userLogin = async (ctx, next) => {
   try {
-    console.log(ctx.query)
+    // console.log(ctx.query)
     const { phone, password, validCode } = ctx.query
 
     // 验证验证码
     if (validCode === BackValidCode) {
       const data = await UserLoginIsValid(phone, password)
-      console.log(data[0][0])
+      // console.log(data[0][0])
       // 去除密码把消息传给前端
-      const newData = {...data[0][0]}
+      const newData = { ...data[0][0] }
       delete newData.password
 
       if (data[0].length === 0 || !data) {
         ctx.body = {
           err: 2,
-          ok:3,
+          ok: 3,
           code: 406,
           msg: '登录验证失败',
           data: null
@@ -163,11 +165,32 @@ const userLogin = async (ctx, next) => {
         return
       }
 
+      // 判断用户是否已经登录
+      let isLogin = false
+      if (LoginedUserId.length != 0) {
+        // 不等于-1说明已经登录
+        if (LoginedUserId.indexOf(newData.id) != -1) {
+          isLogin = true
+        } else {
+          LoginedUserId.push(newData.id)
+        }
+      } else {
+        LoginedUserId.push(newData.id)
+      }
+
+      // 已经登录返回消息告诉前端
+      if (isLogin) return ctx.body = {
+        ok: 4,
+        code: 1,
+        msg: '用户已经登录了！',
+        data: newData
+      }
+
       ctx.body = {
         ok: 1,
         code: 1,
         msg: '登录验证成功！',
-        data:newData
+        data: newData
       }
     } else {
       ctx.body = {
@@ -188,7 +211,7 @@ const userLogin = async (ctx, next) => {
 const userRegistry = async (ctx, next) => {
   try {
     console.log(ctx.query)
-    const {validCode , phone , password} = ctx.query
+    const { validCode, phone, password } = ctx.query
     if (validCode === BackValidCode) {
       // 模拟假数据
       const address = '学源街'
@@ -228,9 +251,9 @@ const userRegistry = async (ctx, next) => {
 
   } catch (error) {
     console.log(typeof error.sqlState)
-    if(error.sqlState === '23000'){
+    if (error.sqlState === '23000') {
       ctx.body = {
-        ok:3,
+        ok: 3,
         sqlState: error.sqlState,
         sqlMessage: "手机号已存在！"
       }
