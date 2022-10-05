@@ -33,8 +33,9 @@ var hasUser = [];
 
 io.on('connection', function (socket) {
   console.log('有一个客户端连接上了服务器,socketId号为'+ socket.id)
-  socket.join('2')
-  console.log('加入的房间',socket.rooms)
+  
+  
+
   socket.on('userId',function (data){
     console.log('发送的id'+data)
     hasUser.push({
@@ -43,14 +44,24 @@ io.on('connection', function (socket) {
     })
   })
   
-  // 绑定监听, 接收客户端发送的消息
+  // 私聊时候加入房间
+  socket.on('enter room',function(data){
+    console.log('穿过来的参数',data)
+    if(!socket.rooms.has(data)){
+      socket.join(data)
+    }
+    console.log('加入的房间',socket.rooms)
+  })
 
-  socket.on("private message", ({ content, to }) => {
+  // 绑定监听, 接收客户端发送的消息
+  socket.on("private message", ({ content, to ,id }) => {
+
     socket.emit('notice','开启了私聊')
     console.log('接收到客户端发来的消息：'+content + '对象为:'+to)
     socket.to(to).emit("private message", {
       content,
-      from: socket.id,
+      from: id,
+      to:to
     });
     
   });
