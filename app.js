@@ -8,6 +8,7 @@ const logger = require('koa-logger')
 
 const index = require('./routes/index')
 const users = require('./routes/users')
+const userContacts = require('./routes/userContacts')
 const loginUsers = require('./routes/loginUsers')
 const JWT = require('./util/JWT')
 
@@ -86,8 +87,8 @@ app.use(async (ctx, next) => {
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
+app.use(userContacts.routes(), userContacts.allowedMethods())
 app.use(loginUsers.routes(), loginUsers.allowedMethods())
-
 
 // error-handling
 app.on('error', (err, ctx) => {
