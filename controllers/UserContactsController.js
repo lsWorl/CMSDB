@@ -1,4 +1,4 @@
-const { QueryUserContactId } = require('../dao/UserContactsDao')
+const { QueryUserContactId, InsertUserContact, confirmUserContact } = require('../dao/UserContactsDao')
 const { QueryUserId } = require('../dao/UserDao')
 
 // 通过用户登录id来查询多少好友
@@ -23,7 +23,7 @@ const userContactsQuery = async (ctx, next) => {
         room_key: data[0][i].room_key,
         last_msg: data[0][i].last_msg
       })
-      
+
     }
     console.log(finalData)
     if (!data[0]) return ctx.body = {
@@ -51,7 +51,52 @@ const userContactsQuery = async (ctx, next) => {
   }
 }
 
+// 添加好友 传入用户id和要加好友的id
+const userContactsAdd = async (ctx, next) => {
+  try {
+    const { userId, contactId } = ctx.request.body
+    const data = await InsertUserContact(userId, contactId)
+    console.log(data)
+    if (data) {
+      ctx.body = {
+        ok: 1,
+        code: 200,
+        msg: "已经成功发送消息！"
+      }
+
+    }
+  } catch (error) {
+    ctx.body = {
+      code: 500,
+      error: "Data error",
+      errMsg: "数据库出错"
+    }
+  }
+}
+// 确认添加
+const confirmContact = async (ctx,next)=>{
+  try {
+    const { userId, contactId } = ctx.request.body
+    const data = await confirmUserContact(userId, contactId)
+    if(data){
+      ctx.body = {
+        ok: 1,
+        code: 200,
+        msg: "成功确认添加用户信息！"
+      }
+    }
+  } catch (error) {
+    ctx.body = {
+      code: 500,
+      error: "Data error",
+      errMsg: "数据库出错"
+    }
+  }
+}
+
 
 module.exports = {
-  userContactsQuery
+  userContactsQuery,
+  userContactsAdd,
+  confirmContact
 }
