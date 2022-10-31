@@ -1,4 +1,4 @@
-const { QueryUser, UpdateUser, InsertUser, DeleteUser, UserLoginIsValid } = require('../dao/UserDao')
+const { QueryUser, UpdateUser, InsertUser, DeleteUser, UserLoginIsValid, QueryUserId, QueryUserPhone } = require('../dao/UserDao')
 
 // 获取随机数
 const getRandomValues = require('get-random-values')
@@ -80,6 +80,91 @@ const userQuery = async (ctx, next) => {
     }
   }
 
+}
+
+// 通过id查找用户
+const userQueryId = async (ctx, next) => {
+  console.log(ctx.query.id);
+  try {
+    if (!ctx.query.id){
+      ctx.body = {
+        code: 400,
+        msg: "没有传入id"
+      }
+      return
+    }
+    const data = await QueryUserId(ctx.query.id)
+    if (data[0].length === 0 || !data) {
+      ctx.body = {
+        err: 2,
+        code: 406,
+        msg: '查询错误',
+        data: null
+      }
+      return 
+    }
+
+    data[0].forEach((item) => {
+      // 删除密码，不将密码传给前端
+      delete item.password
+    })
+
+    ctx.body = {
+      ok: 1,
+      code: 200,
+      data: data[0],
+      total: data[0].length
+    }
+  } catch (error) {
+    console.log('------------userQueryId报错---------');
+    console.log(error);
+    ctx.body = {
+      sqlState: error.sqlState,
+      sqlMessage: "查询数据有误！"
+    }
+  }
+}
+
+// 通过手机号查找用户
+const userQueryPhone = async (ctx, next) => {
+  try {
+    if (!ctx.query.phone){
+      ctx.body = {
+        code: 400,
+        msg: "没有传入手机号"
+      }
+      return
+    }
+    const data = await QueryUserPhone(ctx.query.phone)
+    if (data[0].length === 0 || !data) {
+      ctx.body = {
+        err: 2,
+        code: 406,
+        msg: '查询错误',
+        data: null
+      }
+      return
+    }
+
+    data[0].forEach((item) => {
+      // 删除密码，不将密码传给前端
+      delete item.password
+    })
+
+    ctx.body = {
+      ok: 1,
+      code: 200,
+      data: data[0],
+      total: data[0].length
+    }
+  } catch (error) {
+    console.log('------------userQueryPhone报错---------');
+    console.log(error);
+    ctx.body = {
+      sqlState: error.sqlState,
+      sqlMessage: "查询数据有误！"
+    }
+  }
 }
 
 // 更新用户
@@ -299,5 +384,7 @@ module.exports = {
   userDelete,
   userLogin,
   sendValidCode,
-  userRegistry
+  userRegistry,
+  userQueryId,
+  userQueryPhone
 }

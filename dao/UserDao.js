@@ -127,5 +127,7 @@ module.exports = {
   QueryUser,
   InsertUser,
   DeleteUser,
-  UserLoginIsValid
+  UserLoginIsValid,
+  QueryUserId,
+  QueryUserPhone
 }

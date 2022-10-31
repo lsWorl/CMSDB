@@ -1,15 +1,32 @@
-const {QueryUserId} = require('../dao/UserContactsDao')
-
+const { QueryUserContactId } = require('../dao/UserContactsDao')
+const { QueryUserId } = require('../dao/UserDao')
 
 // 通过用户登录id来查询多少好友
-const userContactsQuery = async (ctx, next)=>{
+const userContactsQuery = async (ctx, next) => {
   try {
 
     // userId是登录用户的id
-    const {userId} = ctx.query
+    const { userId } = ctx.query
     console.log('-------------传入数据--------------')
-    const data = await QueryUserId(userId)
-    if(!data[0]) return ctx.body = {
+    const data = await QueryUserContactId(userId)
+    // console.log(data[0])
+    // 最终返回的数据
+    const finalData = [];
+    // 通过获取联系人来获取用户信息
+    for (let i = 0; i < data[0].length; i++) {
+      const result = await QueryUserId(data[0][i].contact_id)
+      // console.log(result[0][0]);
+      delete result[0][0].password
+      finalData.push({
+        ...result[0][0],
+        last_msg: data[0][i].last_msg,
+        room_key: data[0][i].room_key,
+        last_msg: data[0][i].last_msg
+      })
+      
+    }
+    console.log(finalData)
+    if (!data[0]) return ctx.body = {
       code: 406,
       error: "Not Acceptable",
       errMsg: "传入的id错误"
@@ -17,9 +34,9 @@ const userContactsQuery = async (ctx, next)=>{
 
     ctx.body = {
       ok: 1,
-      code: 1,
-      data: data[0],
-      total: data[0].length
+      code: 200,
+      data: finalData,
+      total: finalData.length
     }
 
 

@@ -1,7 +1,7 @@
 const { poolFn } = require('../config/DBConfig')
 
 // 通过ID进行查找
-function QueryUserId(id) {
+function QueryUserContactId(id) {
   return new Promise((resolve, reject) => {
     try {
       
@@ -24,5 +24,5 @@ function QueryUserId(id) {
 }
 
 module.exports = {
-  QueryUserId
+  QueryUserContactId
 }

@@ -7,7 +7,6 @@
 var app = require('../app');
 var debug = require('debug')('demo:server');
 var http = require('http');
-const { userAdd } = require('../controllers/UserController');
 
 /**
  * Get port from environment and store in Express.
