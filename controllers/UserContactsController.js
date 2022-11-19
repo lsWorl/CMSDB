@@ -1,6 +1,6 @@
 const { QueryUserContactId, InsertUserContact, confirmUserContact } = require('../dao/UserContactsDao')
 const { QueryUserId } = require('../dao/UserDao')
-
+const UserContactsEntity = require('../entity/UserContacts')
 // 通过用户登录id来查询多少好友
 const userContactsQuery = async (ctx, next) => {
   try {
@@ -16,22 +16,22 @@ const userContactsQuery = async (ctx, next) => {
     for (let i = 0; i < data[0].length; i++) {
       const result = await QueryUserId(data[0][i].contact_id)
       // console.log(result[0][0]);
+      delete result[0][0].id
       delete result[0][0].password
       finalData.push({
         ...result[0][0],
-        last_msg: data[0][i].last_msg,
-        room_key: data[0][i].room_key,
-        last_msg: data[0][i].last_msg
+        ...data[0][i]
       })
 
     }
-    console.log(finalData)
+    // console.log(finalData)
     if (!data[0]) return ctx.body = {
       code: 406,
       error: "Not Acceptable",
       errMsg: "传入的id错误"
     }
-
+    // console.log('--------传的联系人数据-------');
+    // console.log(finalData)
     ctx.body = {
       ok: 1,
       code: 200,
@@ -54,7 +54,21 @@ const userContactsQuery = async (ctx, next) => {
 // 添加好友 传入用户id和要加好友的id
 const userContactsAdd = async (ctx, next) => {
   try {
-    const { userId, contactId } = ctx.request.body
+    // 获取介绍信息，如果没有则默认添加
+    const introduction = ctx.request.body.introduction ? ctx.request.body.introduction : '添加好友';
+    const { userId, contactId ,roomKey} = ctx.request.body
+    const userContactsEntity = new UserContactsEntity();
+    const userKey = [userId,contactId]
+    // 如果没有传入房间号说明是添加好友
+    if(!roomKey){
+      userContactsEntity.setUserIntroductionInfo(userKey,introduction)
+      // userIntroduction.set(userId,introduction);
+      console.log('没有房间钥匙')
+    }
+    console.log('获取用户的介绍信息');
+    // console.log(userIntroduction);
+    console.log(userContactsEntity.getUserIntroductionInfo(userKey))
+    return;
     const data = await InsertUserContact(userId, contactId)
     console.log(data)
     if (data) {
@@ -66,6 +80,8 @@ const userContactsAdd = async (ctx, next) => {
 
     }
   } catch (error) {
+    console.log('错误信息');
+    console.log(error)
     ctx.body = {
       code: 500,
       error: "Data error",
@@ -74,11 +90,11 @@ const userContactsAdd = async (ctx, next) => {
   }
 }
 // 确认添加
-const confirmContact = async (ctx,next)=>{
+const confirmContact = async (ctx, next) => {
   try {
     const { userId, contactId } = ctx.request.body
     const data = await confirmUserContact(userId, contactId)
-    if(data){
+    if (data) {
       ctx.body = {
         ok: 1,
         code: 200,

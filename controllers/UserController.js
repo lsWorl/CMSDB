@@ -108,7 +108,8 @@ const userQueryId = async (ctx, next) => {
       // 删除密码，不将密码传给前端
       delete item.password
     })
-
+    console.log('---------登录用户数据-----------')
+    console.log(data[0])
     ctx.body = {
       ok: 1,
       code: 200,
