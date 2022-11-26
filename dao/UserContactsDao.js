@@ -30,7 +30,7 @@ function InsertUserContact(userId, contactsId,room_key = '', isConfirm = false) 
       // is_out 1表示双向同意 0表示单向申请
       const data = poolFn(`INSERT INTO user_contacts
         (user_id,contact_id,msg_num,last_msg,room_key,is_out) 
-        VALUES(${userId},${contactsId},0,"",'${room_key===''? uuid : room_key}',${isConfirm ? 1 : 0})`)
+        VALUES(${contactsId},${userId},0,"",'${room_key===''? uuid : room_key}',${isConfirm ? 1 : 0})`)
       if (data) {
         resolve(data)
       } else {

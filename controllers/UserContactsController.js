@@ -9,7 +9,6 @@ const userContactsQuery = async (ctx, next) => {
     const { userId } = ctx.query
     console.log('-------------传入数据--------------')
     const data = await QueryUserContactId(userId)
-    // console.log(data[0])
     // 最终返回的数据
     const finalData = [];
     // 通过获取联系人来获取用户信息
@@ -56,21 +55,19 @@ const userContactsAdd = async (ctx, next) => {
   try {
     // 获取介绍信息，如果没有则默认添加
     const introduction = ctx.request.body.introduction ? ctx.request.body.introduction : '添加好友';
-    const { userId, contactId ,roomKey} = ctx.request.body
+    const { userId, contactId, roomKey } = ctx.request.body
     const userContactsEntity = new UserContactsEntity();
-    const userKey = [userId,contactId]
+    const userKey = `${userId}-${contactId}`
     // 如果没有传入房间号说明是添加好友
-    if(!roomKey){
-      userContactsEntity.setUserIntroductionInfo(userKey,introduction)
+    if (!roomKey) {
+      userContactsEntity.setUserIntroductionInfo(userKey, introduction)
       // userIntroduction.set(userId,introduction);
       console.log('没有房间钥匙')
     }
     console.log('获取用户的介绍信息');
-    // console.log(userIntroduction);
     console.log(userContactsEntity.getUserIntroductionInfo(userKey))
-    return;
     const data = await InsertUserContact(userId, contactId)
-    console.log(data)
+    // console.log(data)
     if (data) {
       ctx.body = {
         ok: 1,

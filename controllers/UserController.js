@@ -229,9 +229,8 @@ const userDelete = async (ctx, next) => {
 // 用户登录
 const userLogin = async (ctx, next) => {
   try {
-    // console.log(ctx.query)
-    const { phone, password, validCode } = ctx.query
-
+    console.log(ctx.request.body)
+    const { phone, password, validCode } = ctx.request.body
     // 验证验证码
     if (validCode === BackValidCode) {
       const data = await UserLoginIsValid(phone, password)
@@ -296,8 +295,8 @@ const userLogin = async (ctx, next) => {
 // 用户注册
 const userRegistry = async (ctx, next) => {
   try {
-    console.log(ctx.query)
-    const { validCode, phone, password } = ctx.query
+    console.log(ctx.request.body)
+    const { validCode, phone, password } = ctx.request.body
     if (validCode === BackValidCode) {
       // 模拟假数据
       const address = '学源街'
