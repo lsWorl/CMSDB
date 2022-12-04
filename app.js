@@ -10,8 +10,8 @@ const index = require('./routes/index')
 const users = require('./routes/users')
 const userContacts = require('./routes/userContacts')
 const loginUsers = require('./routes/loginUsers')
+const uploads = require('./routes/uploads')
 const JWT = require('./util/JWT')
-
 // const io =require('socket.io')();
 // io.on('connection', client => { 
 //   console.log('连接成功')
@@ -89,7 +89,7 @@ app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 app.use(userContacts.routes(), userContacts.allowedMethods())
 app.use(loginUsers.routes(), loginUsers.allowedMethods())
-
+app.use(uploads.routes(), uploads.allowedMethods())
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)

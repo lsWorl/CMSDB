@@ -9,7 +9,6 @@ class UserContactsEntity {
   }
 
   getUserIntroductionInfo(id){
-    console.log(111111111111);
     console.log(id)
     return this.#userIntroduction.get(id)
   }

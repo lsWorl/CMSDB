@@ -52,11 +52,11 @@ function confirmUserContact(userId, contactsId) {
     try {
       // 先进行搜索先前有发送的消息 id反着来
       const searchContactInfo = await poolFn(`SELECT room_key FROM user_contacts 
-      WHERE user_id = '${contactsId}' and contact_id='${userId}'`)
+      WHERE user_id = '${userId}' and contact_id='${contactsId}'`)
       // 获取房间号
       const room_key = searchContactInfo[0][0].room_key
       // 再对状态进行改变
-      const state = await changeState(contactsId,userId)
+      const state = await changeState(userId,contactsId)
       const result = await InsertUserContact(userId,contactsId,room_key,true)
       if(result&&state){
         resolve(result)
