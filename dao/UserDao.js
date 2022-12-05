@@ -122,9 +122,21 @@ const UserLoginIsValid = (phone,password)=>{
 }
 
 // 修改用户头像
-const ModifyAvatar = (path)=>{
-  console.log('Dao');
+const ModifyAvatar = (path,id)=>{
+  // console.log('Dao');
   console.log(path)
+  return new Promise((resolve,reject)=>{
+    const data = poolFn(`UPDATE user set avatar = '${path}' where id = ${id}`)
+    if(data !=''){
+      resolve(data)
+    }else{
+      reject({
+        code: 406,
+        error: "Not Acceptable",
+        errMsg: "查询的数据不符合格式"
+      })
+    }
+  })
 }
 
 
