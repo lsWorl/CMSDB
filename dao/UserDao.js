@@ -121,6 +121,12 @@ const UserLoginIsValid = (phone,password)=>{
   })
 }
 
+// 修改用户头像
+const ModifyAvatar = (path)=>{
+  console.log('Dao');
+  console.log(path)
+}
+
 
 module.exports = {
   UpdateUser,
@@ -129,5 +135,6 @@ module.exports = {
   DeleteUser,
   UserLoginIsValid,
   QueryUserId,
-  QueryUserPhone
+  QueryUserPhone,
+  ModifyAvatar
 }
