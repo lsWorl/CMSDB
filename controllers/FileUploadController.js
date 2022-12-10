@@ -1,24 +1,15 @@
 const { ModifyAvatar } = require('../dao/UserDao')
 const os = require('os')
-
+const {getIp} = require('../util/state')
 const Imageupload = async (ctx, next) => {
   try {
     const {id} = ctx.request.body
     // console.log(ctx.file)
     const osType = os.type(); //系统类型
     const netInfo = os.networkInterfaces(); //网络信息
-    let ip = '127.0.0.1'
     // console.log(osType)
     if (ctx.file) {
-      if (osType == 'Windows_NT') {
-        // 获取ip地址
-        for (const val of netInfo.以太网) {
-          // console.log(val)
-          if(val.family == 'IPv4'){
-            ip = val.address
-          }
-        }
-      }
+      const ip = getIp()
       const subPath = ctx.file.destination.substring(8)
       const avatarPath = `http://${ip}:3001` + subPath + '/' + ctx.file.filename
       // console.log(avatarPath)

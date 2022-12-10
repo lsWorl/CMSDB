@@ -7,7 +7,10 @@
 var app = require('../app');
 var debug = require('debug')('demo:server');
 var http = require('http');
-
+// fs
+const fs = require('fs')
+// 获取ip
+const { getIp } = require('../util/state')
 /**
  * Get port from environment and store in Express.
  */
@@ -31,28 +34,27 @@ const io = require('socket.io')(server);
 var hasUser = [];
 
 io.on('connection', function (socket) {
-  console.log('有一个客户端连接上了服务器,socketId号为'+ socket.id)
-  
+  console.log('有一个客户端连接上了服务器,socketId号为' + socket.id)
 
-  socket.on('userInfo',function (user){
+
+  socket.on('userInfo', function (user) {
     hasUser.push(user)
     console.log(hasUser)
   })
-  
+
   // 私聊时候加入房间
-  socket.on('enter room',function(data){
-    console.log('穿过来的参数',data)
-    if(!socket.rooms.has(data)){
+  socket.on('enter room', function (data) {
+    console.log('穿过来的参数', data)
+    if (!socket.rooms.has(data)) {
       socket.join(data)
     }
-    console.log('加入的房间',socket.rooms)
+    console.log('加入的房间', socket.rooms)
   })
 
   // 绑定监听, 接收客户端发送的消息
-  socket.on("private message", ({ content, to  ,from ,toSocketId,room_key}) => {
-
-    socket.emit('notice','开启了私聊')
-    console.log('接收到客户端发来的消息：'+content + '对象为:'+to)
+  socket.on("private message", ({ content, to, from, toSocketId, room_key }) => {
+    socket.emit('notice', '开启了私聊')
+    console.log('接收到客户端发来的消息：' + content + '对象为:' + to)
     socket.to(room_key).emit("private message", {
       content,
       from,
@@ -60,8 +62,35 @@ io.on('connection', function (socket) {
       toSocketId,
       room_key
     });
-    
+
   });
+
+  // 接收到文件信息
+  socket.on('send images', (data) => {
+    const { image, room_key } = data;
+    console.log(room_key)
+    let handshake = socket.handshake;
+    // console.log(handshake)
+    console.log('接收到文件消息！')
+    const buffer = Buffer.from(image)
+    // 对路径进行截取
+    const ip = getIp()
+    console.log(ip)
+    // 将路径重写后返回给前端相对应的图片路径
+    const rePath = __dirname.slice(0, 16) + '/public/images/'
+    const subPath = 'communications' + '-' + Date.now() + '.jpg'
+    fs.writeFileSync(rePath + subPath, buffer)
+    // 将图片写入后返回给前端路径
+    socket.emit('receive images', {
+      image_path: `http://${ip}:3001` + '/images/' + subPath,
+      room_key
+    })
+    // 将图片发送给要接收的对象
+    socket.to(room_key).emit('send images', {
+      image_path: `http://${ip}:3001` + '/images/' + subPath,
+      room_key
+    })
+  })
 
 
   socket.on('sendMsg', function (data) {
@@ -69,11 +98,11 @@ io.on('connection', function (socket) {
     console.log('服务器接收到客户端发送的消息', data)
     // 处理数据
     // 发固定人发送消息
-    
+
     // 如果有接收id说明是双人聊天
-    
+
     // 服务器向客户端发送消息
-    
+
     io.emit('receiveMsg', data)
   })
 })

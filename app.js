@@ -12,12 +12,6 @@ const userContacts = require('./routes/userContacts')
 const loginUsers = require('./routes/loginUsers')
 const uploads = require('./routes/uploads')
 const JWT = require('./util/JWT')
-// const io =require('socket.io')();
-// io.on('connection', client => { 
-//   console.log('连接成功')
-//  });
-// io.listen(3000);
-
 // error handler
 onerror(app)
 
@@ -45,23 +39,23 @@ app.use(async (ctx, next) => {
 })
 //token验证
 app.use(async (ctx, next) => {
-  if(ctx.url.includes('login')){
+  if (ctx.url.includes('login')) {
     await next()
     return
   }
 
   const token = ctx.headers["authorization"]?.split(" ")[1]
   console.log(token)
-  if(token){
+  if (token) {
     // 对token解密
     const payload = JWT.verify(token)
-    if(payload){
+    if (payload) {
       await next()
-    }else{
+    } else {
       ctx.status = 403
-      ctx.body = {errCode:-1,errInfo:"token过期"}
+      ctx.body = { errCode: -1, errInfo: "token过期" }
     }
-  }else{
+  } else {
     await next()
   }
 })
@@ -96,6 +90,6 @@ app.on('error', (err, ctx) => {
 });
 
 //连接socket
-app.use(async(ctx,next)=>{
+app.use(async (ctx, next) => {
 })
 module.exports = app

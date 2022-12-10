@@ -2,11 +2,11 @@ const { QueryUser, UpdateUser, InsertUser, DeleteUser, UserLoginIsValid, QueryUs
 
 // 获取随机数
 const getRandomValues = require('get-random-values')
-
+const User = require('../entity/User')
+// 获取用户实例
+const user = new User
 // 存放验证码
 let BackValidCode
-// 存放已经登录的用户
-const LoginedUserId = []
 // 添加用户
 const userAdd = async (ctx, next) => {
 
@@ -252,15 +252,16 @@ const userLogin = async (ctx, next) => {
 
       // 判断用户是否已经登录
       let isLogin = false
-      if (LoginedUserId.length != 0) {
+      const loginedUserId = user.getLoginUser()
+      if (loginedUserId.length != 0) {
         // 不等于-1说明已经登录
-        if (LoginedUserId.indexOf(newData.id) != -1) {
+        if (loginedUserId.indexOf(newData.id) != -1) {
           isLogin = true
         } else {
-          LoginedUserId.push(newData.id)
+          user.addLoginUser(newData.id)
         }
       } else {
-        LoginedUserId.push(newData.id)
+        user.addLoginUser(newData.id)
       }
 
       // 已经登录返回消息告诉前端
@@ -350,6 +351,23 @@ const userRegistry = async (ctx, next) => {
     }
   }
 }
+// 用户登出
+const userLogOut = async (ctx,next)=>{
+  try {
+    const {id} = ctx.query 
+    console.log('id与账号')
+    console.log(id)
+    const loginedUserId = user.getLoginUser()
+    console.log(loginedUserId)
+    // if()
+  } catch (error) {
+    ctx.body = {
+      sqlState: error.sqlState,
+      sqlMessage: "SQL数据有误！"
+    }
+  }
+}
+
 
 // 模拟验证码发送
 const sendValidCode = async (ctx, next) => {
@@ -386,5 +404,6 @@ module.exports = {
   sendValidCode,
   userRegistry,
   userQueryId,
-  userQueryPhone
+  userQueryPhone,
+  userLogOut
 }

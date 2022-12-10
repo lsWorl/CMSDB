@@ -4,7 +4,17 @@ class User {
   #phone
   #createDate
   #address
+  // 存放已经登录的用户
+  #LoginedUserId = []
   constructor() {}
+
+  addLoginUser(user){
+    this.#LoginedUserId.push(user)
+  }
+
+  getLoginUser(){
+    return this.#LoginedUserId
+  }
 
   setId(id) {
     this.#id = id
