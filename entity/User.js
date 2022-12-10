@@ -16,6 +16,12 @@ class User {
     return this.#LoginedUserId
   }
 
+  removeLogingUser(index){
+    console.log(index)
+    this.#LoginedUserId = this.#LoginedUserId.splice(index,0)
+    console.log(this.#LoginedUserId.splice(index,0))
+  }
+
   setId(id) {
     this.#id = id
   }

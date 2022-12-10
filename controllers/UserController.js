@@ -253,6 +253,7 @@ const userLogin = async (ctx, next) => {
       // 判断用户是否已经登录
       let isLogin = false
       const loginedUserId = user.getLoginUser()
+      console.log(loginedUserId)
       if (loginedUserId.length != 0) {
         // 不等于-1说明已经登录
         if (loginedUserId.indexOf(newData.id) != -1) {
@@ -355,10 +356,12 @@ const userRegistry = async (ctx, next) => {
 const userLogOut = async (ctx,next)=>{
   try {
     const {id} = ctx.query 
-    console.log('id与账号')
-    console.log(id)
     const loginedUserId = user.getLoginUser()
-    console.log(loginedUserId)
+    user.removeLogingUser(loginedUserId.indexOf(parseInt(id)))
+    ctx.body = {
+      code:200,
+      msg:"登出成功！"
+    }
     // if()
   } catch (error) {
     ctx.body = {
