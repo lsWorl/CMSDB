@@ -34,7 +34,7 @@ function QueryLoginUserId(id) {
 // 通过账号密码查询用户
 function QueryLoginUserPwd(name,pwd,permissions){
   return new Promise((resolve,reject)=>{
-    const data = poolFn(`SELECT * FROM login_user where name='${name}' and password = '${pwd}' and permissions = ${permissions}`)
+    const data = poolFn(`SELECT * FROM login_user where phone='${name}' and password = '${pwd}' and permissions = ${permissions}`)
     if (data != '') {
       resolve(data)
     } else {

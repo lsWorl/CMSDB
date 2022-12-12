@@ -1,4 +1,4 @@
-const { QueryUserContactId, InsertUserContact, confirmUserContact } = require('../dao/UserContactsDao')
+const { QueryUserContactId, InsertUserContact, confirmUserContact , removeContact } = require('../dao/UserContactsDao')
 const { QueryUserId } = require('../dao/UserDao')
 const UserContactsEntity = require('../entity/UserContacts')
 // 通过用户登录id来查询多少好友
@@ -107,9 +107,40 @@ const confirmContact = async (ctx, next) => {
   }
 }
 
+// 删除好友
+const deleteContact = async (ctx, next) => {
+  try {
+    const { userId, contactId } = ctx.request.body
+    console.log(userId,contactId)
+    // 通过用户id和联系人id来进行删除
+    const data = await removeContact(userId, contactId)
+    console.log(data)
+    if(data[0].affectedRows == 1){
+      ctx.body = {
+        code:200,
+        msg:"删除成功！"
+      }
+    }else{
+      ctx.body = {
+        code:400,
+        msg:"删除失败，请稍后再试！"
+      }
+    }
+    
+    // const data = await confirmUserContact(userId, contactId)
+  } catch (error) {
+    ctx.body = {
+      code: 500,
+      error: "Data error",
+      errMsg: "数据库出错"
+    }
+  }
+}
+
 
 module.exports = {
   userContactsQuery,
   userContactsAdd,
-  confirmContact
+  confirmContact,
+  deleteContact
 }

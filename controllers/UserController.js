@@ -1,4 +1,4 @@
-const { QueryUser, UpdateUser, InsertUser, DeleteUser, UserLoginIsValid, QueryUserId, QueryUserPhone } = require('../dao/UserDao')
+const { QueryUser, UpdateUser, InsertUser, DeleteUser, UserLoginIsValid, QueryUserId, QueryUserPhone , ModifyPassword } = require('../dao/UserDao')
 
 // 获取随机数
 const getRandomValues = require('get-random-values')
@@ -167,7 +167,7 @@ const userQueryPhone = async (ctx, next) => {
     }
   }
 }
-
+ 
 // 更新用户
 const userUpdate = async (ctx, next) => {
   try {
@@ -194,6 +194,25 @@ const userUpdate = async (ctx, next) => {
     }
   }
 
+}
+
+// 修改密码
+const modifyPassword = async (ctx,next)=>{
+  try {
+    const { id , password} = ctx.request.body
+    const data = await ModifyPassword(password,id)
+    if(data[0]){
+      ctx.body = {
+        code:200,
+        msg:"密码修改成功！"
+      }
+    }
+  } catch (error) {
+    ctx.body = {
+      sqlState: error.sqlState,
+      sqlMessage: "数据有误！"
+    }
+  }
 }
 
 // 删除用户
@@ -408,5 +427,6 @@ module.exports = {
   userRegistry,
   userQueryId,
   userQueryPhone,
-  userLogOut
+  userLogOut,
+  modifyPassword
 }

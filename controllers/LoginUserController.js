@@ -130,7 +130,9 @@ const loginUserDelete = async (ctx, next) => {
 const loginController = async (ctx, next) => {
   try {
     // console.log(ctx.query)
+    
     const { name, password, permissions } = ctx.query
+    console.log(name, password, permissions)
     const data = await QueryLoginUserPwd(name, password, permissions)
     
     if (data[0][0]) {

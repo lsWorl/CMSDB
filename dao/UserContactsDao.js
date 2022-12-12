@@ -23,14 +23,14 @@ function QueryUserContactId(id) {
   })
 }
 
-function InsertUserContact(userId, contactsId,room_key = '', isConfirm = false) {
+function InsertUserContact(userId, contactsId, room_key = '', isConfirm = false) {
   return new Promise((resolve, reject) => {
     try {
       const uuid = short.generate()
       // is_out 1表示双向同意 0表示单向申请
       const data = poolFn(`INSERT INTO user_contacts
         (user_id,contact_id,msg_num,last_msg,room_key,is_out) 
-        VALUES(${contactsId},${userId},0,"",'${room_key===''? uuid : room_key}',${isConfirm ? 1 : 0})`)
+        VALUES(${contactsId},${userId},0,"",'${room_key === '' ? uuid : room_key}',${isConfirm ? 1 : 0})`)
       if (data) {
         resolve(data)
       } else {
@@ -43,6 +43,7 @@ function InsertUserContact(userId, contactsId,room_key = '', isConfirm = false) 
     } catch (error) {
       console.log('-----------------数据库错误-------------------')
       console.log(error)
+      reject(error)
     }
   })
 }
@@ -56,18 +57,34 @@ function confirmUserContact(userId, contactsId) {
       // 获取房间号
       const room_key = searchContactInfo[0][0].room_key
       // 再对状态进行改变
-      const state = await changeState(userId,contactsId)
-      const result = await InsertUserContact(userId,contactsId,room_key,true)
-      if(result&&state){
+      const state = await changeState(userId, contactsId)
+      const result = await InsertUserContact(userId, contactsId, room_key, true)
+      if (result && state) {
         resolve(result)
       }
     } catch (error) {
       console.log('-----------------数据库错误-------------------')
       console.log(error)
+      reject(error)
     }
   })
 }
 
+// 删除联系人
+function removeContact(userId, contactId){
+  return new Promise(async(resolve,reject)=>{
+    try {
+      const data = poolFn(`DELETE FROM user_contacts WHERE user_id = ${userId} and contact_id = ${contactId}`)
+      resolve(data)
+    } catch (error) {
+      console.log('-----------------数据库错误-------------------')
+      console.log(error)
+      reject(error)
+    }
+  })
+}
+
+// 改变是否为好友状态
 function changeState(userId, contactId) {
   return poolFn(`UPDATE user_contacts set is_out = '1' where user_id='${userId}' and contact_id = '${contactId}'`)
 }
@@ -75,5 +92,6 @@ function changeState(userId, contactId) {
 module.exports = {
   QueryUserContactId,
   InsertUserContact,
-  confirmUserContact
+  confirmUserContact,
+  removeContact
 }
